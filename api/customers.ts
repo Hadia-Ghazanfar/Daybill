@@ -1,8 +1,8 @@
 // GET /api/customers?q=   POST /api/customers
-import { query, run } from "./_db";
-import { requireAuth } from "./_auth";
-import { toDisplay, parsePhone, newId, nowIso, wrap } from "./_util";
-import { HttpError as HE } from "./_auth";
+import { query, run } from "../_db";
+import { requireAuth } from "../_auth";
+import { toDisplay, parsePhone, newId, nowIso, wrap } from "../_util";
+import { HttpError as HE } from "../_auth";
 
 const LIST_SQL = `
 SELECT c.id, c.name, c.phone, c.address, c.created_at,

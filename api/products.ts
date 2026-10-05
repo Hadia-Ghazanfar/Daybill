@@ -1,8 +1,8 @@
 // GET /api/products   POST /api/products
-import { query, run } from "./_db";
-import { requireAuth } from "./_auth";
-import { productShape, newId, nowIso, wrap } from "./_util";
-import { HttpError as HE } from "./_auth";
+import { query, run } from "../_db";
+import { requireAuth } from "../_auth";
+import { productShape, newId, nowIso, wrap } from "../_util";
+import { HttpError as HE } from "../_auth";
 
 export async function listProducts(req: any, res: any) {
   const user = await requireAuth(req);

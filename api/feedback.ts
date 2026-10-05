@@ -1,8 +1,8 @@
 // GET /api/feedback (admin)   POST /api/feedback (auth user)
-import { query, run } from "./_db";
-import { requireAuth, requireAdmin } from "./_auth";
-import { toDisplay, newId, nowIso, wrap } from "./_util";
-import { HttpError as HE } from "./_auth";
+import { query, run } from "../_db";
+import { requireAuth, requireAdmin } from "../_auth";
+import { toDisplay, newId, nowIso, wrap } from "../_util";
+import { HttpError as HE } from "../_auth";
 
 const CATEGORIES = ["Bug", "Suggestion", "Other"];
 
