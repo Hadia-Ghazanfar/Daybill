@@ -1,0 +1,1 @@
+{"name":"daybill-standalone","private":true,"scripts":{"build":"cd frontend && npm install && npm run build","dev:api":"cd api && npm run dev","dev:web":"cd frontend && npm run dev"},"version":"1.0.0"}
