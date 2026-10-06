@@ -7,6 +7,31 @@ import { toDigits, toWhatsApp } from '../utils/phone';
 import { safeFileName } from '../utils/format';
 import { shareInvoiceImage, shareViaNative, renderInvoicePng, isShareCancelled } from '../utils/whatsapp';
 import { InvoiceDoc, InvoiceImage } from '../components/InvoiceImage';
+
+/** Scales the 800px invoice to fit the container width on mobile. */
+function ScaledInvoice({ children }: { children: any }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => {
+      const w = el.clientWidth;
+      setScale(w < 800 ? w / 800 : 1);
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+  return (
+    <div ref={ref} style={{ width: '100%', overflow: 'hidden' }}>
+      <div style={{ width: 800, transform: `scale(${scale})`, transformOrigin: 'top left', height: scale < 1 ? `${800 * scale}px` : 'auto' }}>
+        <div style={{ width: 800 }}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
 import { ShareSheet, type ShareSheetState } from '../components/ShareSheet';
 import { Card, Button, Spinner, Badge } from '../components/ui';
 import { normalizeInvoice, normalizeInvoiceItem, type Invoice, type InvoiceItemView, type Customer } from '../utils/types';
@@ -198,9 +223,9 @@ export default function InvoiceDetail() {
         <>
           {/* Visible invoice preview */}
           <Card className="overflow-hidden">
-            <div className="overflow-x-auto">
+            <ScaledInvoice>
               <InvoiceDoc {...docProps} />
-            </div>
+            </ScaledInvoice>
           </Card>
 
           {/* Actions */}
