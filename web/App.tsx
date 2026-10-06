@@ -23,7 +23,7 @@ import NotFound from './NotFound';
 function lazyPage(name: string) {
   return lazy(
     () =>
-      import(`./pages/${name}.tsx`) as Promise<{
+      import(`./${name}.tsx`) as Promise<{
         default: React.ComponentType;
       }>
   );
