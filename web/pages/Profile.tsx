@@ -1,6 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, SegmentedControl } from '../components/ui';
+import { useState } from 'react';
+import * as React from 'react';
 import { useAuth } from '../auth/AuthContext';
+import { api } from '../api/client';
 import { useLanguage } from '../i18n';
 import { useTheme } from '../theme/ThemeContext';
 import { toDisplay } from '../utils/phone';
@@ -9,7 +12,44 @@ import { avatarFor } from '../utils/avatar';
 export default function Profile() {
   const { t, lang, setLang } = useLanguage();
   const { theme, setTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { user, logout, refresh } = useAuth();
+  const [logoBusy, setLogoBusy] = useState(false);
+  const fileRef = React.useRef<HTMLInputElement>(null);
+
+  async function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith('image/')) return;
+    setLogoBusy(true);
+    try {
+      // Resize to max 256px and convert to base64
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const max = 256;
+          let w = img.width, hh = img.height;
+          if (w > max || hh > max) {
+            const r = Math.min(max / w, max / hh);
+            w = Math.round(w * r); hh = Math.round(hh * r);
+          }
+          canvas.width = w; canvas.height = hh;
+          canvas.getContext('2d')?.drawImage(img, 0, 0, w, hh);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = reject;
+        img.src = URL.createObjectURL(f);
+      });
+      await api.put('/auth/profile', { logoUrl: dataUrl });
+      if (refresh) await refresh();
+      else window.location.reload();
+    } catch {
+      // ignore
+    } finally {
+      setLogoBusy(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -27,10 +67,31 @@ export default function Profile() {
       {/* Shop info */}
       <Card className="mt-3 p-4">
         <div className="flex items-center gap-3">
-          <img
-            src={user ? avatarFor(user.id) : avatarFor('profile')}
-            alt=""
-            className="h-14 w-14 rounded-full bg-slate-100 dark:bg-slate-800"
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
+            title="Upload shop logo"
+          >
+            {user?.logoUrl ? (
+              <img src={user.logoUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <img
+                src={user ? avatarFor(user.id) : avatarFor('profile')}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            )}
+            {logoBusy && (
+              <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-xs">…</span>
+            )}
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleLogoChange}
           />
           <div className="min-w-0">
             <p className="truncate text-base font-bold text-slate-900 dark:text-white">
