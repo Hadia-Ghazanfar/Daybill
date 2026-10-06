@@ -3,7 +3,10 @@ import loginHandler from "./_h/auth-login";
 import adminLoginHandler from "./_h/auth-admin-login";
 import meHandler from "./_h/auth-me";
 
+import { ensureInit } from "./_init";
+
 export default async (req: any, res: any) => {
+  await ensureInit();
   const action = String(req.query.action || "");
   if (req.method === "POST" && action === "register") return registerHandler(req, res);
   if (req.method === "POST" && action === "login") return loginHandler(req, res);
