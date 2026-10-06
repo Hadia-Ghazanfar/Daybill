@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users(
   phone TEXT UNIQUE,
   shop_name TEXT,
   shop_address TEXT,
+  logo_url TEXT,
   pin_hash TEXT,
   email TEXT UNIQUE,
   password_hash TEXT,

@@ -38,6 +38,7 @@ function userShape(row: any) {
     phone: toDisplay(row.phone),
     shopName: row.shop_name ?? null,
     shopAddress: row.shop_address ?? null,
+    logoUrl: row.logo_url ?? null,
     email: row.email ?? null,
     role: row.role || "user",
     createdAt: row.created_at,
