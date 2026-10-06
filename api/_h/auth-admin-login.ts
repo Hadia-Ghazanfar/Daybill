@@ -1,12 +1,12 @@
 // POST /api/auth/admin-login  {email, password}
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const bcrypt = require("bcryptjs");
-import { get } from "../_db";
-import { signJWT } from "../_auth";
-import { userShape, wrap } from "../_util";
-import { HttpError as HE } from "../_auth";
+const { get } = require("../_db");
+const { signJWT } = require("../_auth");
+const { userShape, wrap } = require("../_util");
+const { HttpError as HE } = require("../_auth");
 
-export default wrap(async (req: any, res: any) => {
+module.exports = wrap(async (req: any, res: any) => {
   const { email, password } = req.body || {};
   if (!email || !password) throw new HE(400, "email and password are required");
   const row = await get<any>(

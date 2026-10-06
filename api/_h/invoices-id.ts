@@ -1,10 +1,10 @@
 // GET /api/invoices/:id — detail with items + customer
-import { query, get } from "../_db";
-import { requireAuth } from "../_auth";
-import { toDisplay, invoiceTotal, wrap } from "../_util";
-import { HttpError as HE } from "../_auth";
+const { query, get } = require("../_db");
+const { requireAuth } = require("../_auth");
+const { toDisplay, invoiceTotal, wrap } = require("../_util");
+const { HttpError as HE } = require("../_auth");
 
-export default wrap(async (req: any, res: any) => {
+module.exports = wrap(async (req: any, res: any) => {
   const user = await requireAuth(req);
   const inv = await get<any>("SELECT * FROM invoices WHERE id = ? AND user_id = ?", [(req.query.id ?? req.params?.id), user.id]);
   if (!inv) throw new HE(404, "Invoice not found");

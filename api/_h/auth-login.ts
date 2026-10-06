@@ -1,12 +1,12 @@
 // POST /api/auth/login  {phone, pin}
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const bcrypt = require("bcryptjs");
-import { get } from "../_db";
-import { signJWT } from "../_auth";
-import { userShape, toDigits, wrap } from "../_util";
-import { HttpError as HE } from "../_auth";
+const { get } = require("../_db");
+const { signJWT } = require("../_auth");
+const { userShape, toDigits, wrap } = require("../_util");
+const { HttpError as HE } = require("../_auth");
 
-export default wrap(async (req: any, res: any) => {
+module.exports = wrap(async (req: any, res: any) => {
   const { phone, pin } = req.body || {};
   if (!phone || !pin) throw new HE(400, "phone and pin are required");
   const digits = toDigits(phone);

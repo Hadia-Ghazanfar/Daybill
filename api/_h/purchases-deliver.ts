@@ -1,10 +1,10 @@
 // POST /api/purchases/:id/deliver — mark delivered, stock++ (idempotent: 409 if already delivered)
-import { query, get, run } from "../_db";
-import { requireAuth } from "../_auth";
-import { wrap } from "../_util";
-import { HttpError as HE } from "../_auth";
+const { query, get, run } = require("../_db");
+const { requireAuth } = require("../_auth");
+const { wrap } = require("../_util");
+const { HttpError as HE } = require("../_auth");
 
-export default wrap(async (req: any, res: any) => {
+module.exports = wrap(async (req: any, res: any) => {
   const user = await requireAuth(req);
   const p = await get<any>("SELECT * FROM purchases WHERE id = ? AND user_id = ?", [(req.query.id ?? req.params?.id), user.id]);
   if (!p) throw new HE(404, "Purchase not found");

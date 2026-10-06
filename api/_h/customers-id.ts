@@ -1,8 +1,8 @@
 // /api/customers/:id — GET (detail+stats+history), PUT, DELETE
-import { query, get, run } from "../_db";
-import { requireAuth } from "../_auth";
-import { toDisplay, parsePhone, wrap } from "../_util";
-import { HttpError as HE } from "../_auth";
+const { query, get, run } = require("../_db");
+const { requireAuth } = require("../_auth");
+const { toDisplay, parsePhone, wrap } = require("../_util");
+const { HttpError as HE } = require("../_auth");
 
 async function loadCustomer(userId: string, id: string) {
   const c = await get<any>("SELECT * FROM customers WHERE id = ? AND user_id = ?", [id, userId]);
@@ -10,7 +10,7 @@ async function loadCustomer(userId: string, id: string) {
   return c;
 }
 
-export async function getCustomer(req: any, res: any) {
+async function getCustomer(req: any, res: any) {
   const user = await requireAuth(req);
   const c = await loadCustomer(user.id, (req.query.id ?? req.params?.id));
 
@@ -49,7 +49,7 @@ export async function getCustomer(req: any, res: any) {
   });
 }
 
-export async function updateCustomer(req: any, res: any) {
+async function updateCustomer(req: any, res: any) {
   const user = await requireAuth(req);
   const c = await loadCustomer(user.id, (req.query.id ?? req.params?.id));
   const { name, phone, address } = req.body || {};
@@ -68,14 +68,14 @@ export async function updateCustomer(req: any, res: any) {
   });
 }
 
-export async function deleteCustomer(req: any, res: any) {
+async function deleteCustomer(req: any, res: any) {
   const user = await requireAuth(req);
   await loadCustomer(user.id, (req.query.id ?? req.params?.id));
   await run("DELETE FROM customers WHERE id = ? AND user_id = ?", [(req.query.id ?? req.params?.id), user.id]);
   res.json({ ok: true });
 }
 
-export default wrap(async (req: any, res: any) => {
+module.exports = wrap(async (req: any, res: any) => {
   if (req.method === "GET") return getCustomer(req, res);
   if (req.method === "PUT") return updateCustomer(req, res);
   if (req.method === "DELETE") return deleteCustomer(req, res);

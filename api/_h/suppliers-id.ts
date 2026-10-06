@@ -1,8 +1,8 @@
 // /api/suppliers/:id — GET (detail+stats+history), PUT, DELETE
-import { query, get, run } from "../_db";
-import { requireAuth } from "../_auth";
-import { toDisplay, parsePhone, wrap } from "../_util";
-import { HttpError as HE } from "../_auth";
+const { query, get, run } = require("../_db");
+const { requireAuth } = require("../_auth");
+const { toDisplay, parsePhone, wrap } = require("../_util");
+const { HttpError as HE } = require("../_auth");
 
 async function loadSupplier(userId: string, id: string) {
   const s = await get<any>("SELECT * FROM suppliers WHERE id = ? AND user_id = ?", [id, userId]);
@@ -10,7 +10,7 @@ async function loadSupplier(userId: string, id: string) {
   return s;
 }
 
-export async function getSupplier(req: any, res: any) {
+async function getSupplier(req: any, res: any) {
   const user = await requireAuth(req);
   const s = await loadSupplier(user.id, (req.query.id ?? req.params?.id));
 
@@ -47,7 +47,7 @@ export async function getSupplier(req: any, res: any) {
   });
 }
 
-export async function updateSupplier(req: any, res: any) {
+async function updateSupplier(req: any, res: any) {
   const user = await requireAuth(req);
   const s = await loadSupplier(user.id, (req.query.id ?? req.params?.id));
   const { name, phone, address } = req.body || {};
@@ -66,14 +66,14 @@ export async function updateSupplier(req: any, res: any) {
   });
 }
 
-export async function deleteSupplier(req: any, res: any) {
+async function deleteSupplier(req: any, res: any) {
   const user = await requireAuth(req);
   await loadSupplier(user.id, (req.query.id ?? req.params?.id));
   await run("DELETE FROM suppliers WHERE id = ? AND user_id = ?", [(req.query.id ?? req.params?.id), user.id]);
   res.json({ ok: true });
 }
 
-export default wrap(async (req: any, res: any) => {
+module.exports = wrap(async (req: any, res: any) => {
   if (req.method === "GET") return getSupplier(req, res);
   if (req.method === "PUT") return updateSupplier(req, res);
   if (req.method === "DELETE") return deleteSupplier(req, res);

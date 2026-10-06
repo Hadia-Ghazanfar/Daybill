@@ -1,7 +1,7 @@
 // GET /api/dashboard?range=7d|1m|3m|6m|9m|1y|lifetime
-import { query } from "../_db";
-import { requireAuth } from "../_auth";
-import { wrap } from "../_util";
+const { query } = require("../_db");
+const { requireAuth } = require("../_auth");
+const { wrap } = require("../_util");
 
 const RANGE_DAYS: Record<string, number> = {
   "7d": 7,
@@ -16,7 +16,7 @@ function dayStr(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export default wrap(async (req: any, res: any) => {
+module.exports = wrap(async (req: any, res: any) => {
   const user = await requireAuth(req);
   const range = String(req.query.range || "7d");
   const days = RANGE_DAYS[range] ?? 7;

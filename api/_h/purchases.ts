@@ -1,10 +1,10 @@
 // GET /api/purchases   POST /api/purchases
-import { query, get, run } from "../_db";
-import { requireAuth } from "../_auth";
-import { newId, nowIso, wrap } from "../_util";
-import { HttpError as HE } from "../_auth";
+const { query, get, run } = require("../_db");
+const { requireAuth } = require("../_auth");
+const { newId, nowIso, wrap } = require("../_util");
+const { HttpError as HE } = require("../_auth");
 
-export async function listPurchases(req: any, res: any) {
+async function listPurchases(req: any, res: any) {
   const user = await requireAuth(req);
   const rows = await query<any>(
     `SELECT p.id, p.type, p.delivered, p.date, p.notes, p.created_at,
@@ -30,7 +30,7 @@ export async function listPurchases(req: any, res: any) {
   });
 }
 
-export async function createPurchase(req: any, res: any) {
+async function createPurchase(req: any, res: any) {
   const user = await requireAuth(req);
   const { supplierId, date, type, items, notes } = req.body || {};
   if (!supplierId) throw new HE(400, "supplierId is required");
@@ -76,7 +76,7 @@ export async function createPurchase(req: any, res: any) {
   });
 }
 
-export default wrap(async (req: any, res: any) => {
+module.exports = wrap(async (req: any, res: any) => {
   if (req.method === "GET") return listPurchases(req, res);
   if (req.method === "POST") return createPurchase(req, res);
   res.status(405).json({ error: "Method not allowed" });
