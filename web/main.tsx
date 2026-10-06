@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
-import { ThemeProvider } from './ThemeContext';
+import { ThemeProvider } from './theme/ThemeContext';
 import { LanguageProvider } from './i18n';
-import { AuthProvider } from './AuthContext';
+import { AuthProvider } from './auth/AuthContext';
 
 /**
  * Must match CACHE_VERSION in public/sw.js — bump BOTH together on deploy.

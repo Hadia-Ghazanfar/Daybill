@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy, useMemo } from 'react';
 import {
   BrowserRouter,
   Routes,
@@ -6,26 +6,28 @@ import {
   Navigate,
   Outlet,
 } from 'react-router-dom';
-import { useAuth } from './AuthContext';
+import { useAuth } from './auth/AuthContext';
 import { useLanguage } from './i18n';
-import { AppShell } from './layout';
-import Splash from './Splash';
-import Welcome from './Welcome';
-import Login from './Login';
-import Register from './Register';
-import NotFound from './NotFound';
+import { AppShell } from './components/layout';
+import Splash from './pages/Splash';
+import Welcome from './pages/Welcome';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import NotFound from './pages/NotFound';
 
-import Dashboard from './Dashboard';
-import Bills from './Bills';
-import InvoiceDetail from './InvoiceDetail';
-import CreateInvoice from './CreateInvoice';
-import Contacts from './Contacts';
-import ContactDetail from './ContactDetail';
-import Products from './Products';
-import NewPurchase from './NewPurchase';
-import Profile from './Profile';
-import Feedback from './Feedback';
-import Admin from './Admin';
+/**
+ * Feature pages live at these EXACT paths and are built by other agents.
+ * The template-literal dynamic import keeps tsc happy while they don't exist
+ * yet; Vite resolves them into code-split chunks once the files land.
+ */
+function lazyPage(name: string) {
+  return lazy(
+    () =>
+      import(`./pages/${name}.tsx`) as Promise<{
+        default: React.ComponentType;
+      }>
+  );
+}
 
 const FEATURE_PAGES = [
   'Dashboard',
@@ -43,29 +45,33 @@ const FEATURE_PAGES = [
 
 type FeaturePageName = (typeof FEATURE_PAGES)[number];
 
-const PAGE_COMPONENTS: Record<FeaturePageName, React.ComponentType> = {
-  Dashboard,
-  Bills,
-  InvoiceDetail,
-  CreateInvoice,
-  Contacts,
-  ContactDetail,
-  Products,
-  NewPurchase,
-  Profile,
-  Feedback,
-  Admin,
-};
+const pageCache = new Map<
+  FeaturePageName,
+  React.LazyExoticComponent<React.ComponentType>
+>();
 
 function getLazyPage(name: FeaturePageName) {
-  return PAGE_COMPONENTS[name];
+  let page = pageCache.get(name);
+  if (!page) {
+    page = lazyPage(name);
+    pageCache.set(name, page);
+  }
+  return page;
+}
+
+function PageSpinner() {
+  return (
+    <div className="flex min-h-[40vh] items-center justify-center">
+      <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-100 border-t-brand dark:border-slate-800 dark:border-t-accent" />
+    </div>
+  );
 }
 
 function BootScreen() {
   return (
     <div className="flex min-h-dvh items-center justify-center bg-brand">
       <img
-        src="/logo-white.png"
+        src="/assets/logo-white.png"
         alt="Daybill"
         className="w-36 animate-pulse-soft"
       />
@@ -107,10 +113,12 @@ function PageLoadError({ onRetry }: { onRetry: () => void }) {
 }
 
 function LazyRoute({ name }: { name: FeaturePageName }) {
-  const Page = getLazyPage(name);
+  const Page = useMemo(() => getLazyPage(name), [name]);
   return (
     <PageLoadBoundary>
-      <Page />
+      <Suspense fallback={<PageSpinner />}>
+        <Page />
+      </Suspense>
     </PageLoadBoundary>
   );
 }
