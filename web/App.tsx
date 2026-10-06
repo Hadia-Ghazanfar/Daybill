@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useMemo } from 'react';
+import React from 'react';
 import {
   BrowserRouter,
   Routes,
@@ -15,19 +15,17 @@ import Login from './Login';
 import Register from './Register';
 import NotFound from './NotFound';
 
-/**
- * Feature pages live at these EXACT paths and are built by other agents.
- * The template-literal dynamic import keeps tsc happy while they don't exist
- * yet; Vite resolves them into code-split chunks once the files land.
- */
-function lazyPage(name: string) {
-  return lazy(
-    () =>
-      import(`./${name}.tsx`) as Promise<{
-        default: React.ComponentType;
-      }>
-  );
-}
+import Dashboard from './Dashboard';
+import Bills from './Bills';
+import InvoiceDetail from './InvoiceDetail';
+import CreateInvoice from './CreateInvoice';
+import Contacts from './Contacts';
+import ContactDetail from './ContactDetail';
+import Products from './Products';
+import NewPurchase from './NewPurchase';
+import Profile from './Profile';
+import Feedback from './Feedback';
+import Admin from './Admin';
 
 const FEATURE_PAGES = [
   'Dashboard',
@@ -45,26 +43,22 @@ const FEATURE_PAGES = [
 
 type FeaturePageName = (typeof FEATURE_PAGES)[number];
 
-const pageCache = new Map<
-  FeaturePageName,
-  React.LazyExoticComponent<React.ComponentType>
->();
+const PAGE_COMPONENTS: Record<FeaturePageName, React.ComponentType> = {
+  Dashboard,
+  Bills,
+  InvoiceDetail,
+  CreateInvoice,
+  Contacts,
+  ContactDetail,
+  Products,
+  NewPurchase,
+  Profile,
+  Feedback,
+  Admin,
+};
 
 function getLazyPage(name: FeaturePageName) {
-  let page = pageCache.get(name);
-  if (!page) {
-    page = lazyPage(name);
-    pageCache.set(name, page);
-  }
-  return page;
-}
-
-function PageSpinner() {
-  return (
-    <div className="flex min-h-[40vh] items-center justify-center">
-      <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-100 border-t-brand dark:border-slate-800 dark:border-t-accent" />
-    </div>
-  );
+  return PAGE_COMPONENTS[name];
 }
 
 function BootScreen() {
@@ -113,12 +107,10 @@ function PageLoadError({ onRetry }: { onRetry: () => void }) {
 }
 
 function LazyRoute({ name }: { name: FeaturePageName }) {
-  const Page = useMemo(() => getLazyPage(name), [name]);
+  const Page = getLazyPage(name);
   return (
     <PageLoadBoundary>
-      <Suspense fallback={<PageSpinner />}>
-        <Page />
-      </Suspense>
+      <Page />
     </PageLoadBoundary>
   );
 }
