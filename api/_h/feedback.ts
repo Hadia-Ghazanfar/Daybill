@@ -2,7 +2,7 @@
 const { query, run } = require("../_db");
 const { requireAuth, requireAdmin } = require("../_auth");
 const { toDisplay, newId, nowIso, wrap } = require("../_util");
-const { HttpError as HE } = require("../_auth");
+const { HttpError: HE } = require("../_auth");
 
 const CATEGORIES = ["Bug", "Suggestion", "Other"];
 

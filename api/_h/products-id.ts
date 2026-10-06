@@ -2,7 +2,7 @@
 const { get, run } = require("../_db");
 const { requireAuth } = require("../_auth");
 const { productShape, wrap } = require("../_util");
-const { HttpError as HE } = require("../_auth");
+const { HttpError: HE } = require("../_auth");
 
 async function loadProduct(userId: string, id: string) {
   const p = await get<any>("SELECT * FROM products WHERE id = ? AND user_id = ?", [id, userId]);

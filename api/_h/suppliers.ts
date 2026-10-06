@@ -2,7 +2,7 @@
 const { query, run } = require("../_db");
 const { requireAuth } = require("../_auth");
 const { toDisplay, parsePhone, newId, nowIso, wrap } = require("../_util");
-const { HttpError as HE } = require("../_auth");
+const { HttpError: HE } = require("../_auth");
 
 const LIST_SQL = `
 SELECT s.id, s.name, s.phone, s.address, s.created_at,

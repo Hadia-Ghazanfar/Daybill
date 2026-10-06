@@ -2,7 +2,7 @@
 const { query, get, run } = require("../_db");
 const { requireAuth } = require("../_auth");
 const { wrap } = require("../_util");
-const { HttpError as HE } = require("../_auth");
+const { HttpError: HE } = require("../_auth");
 
 module.exports = wrap(async (req: any, res: any) => {
   const user = await requireAuth(req);

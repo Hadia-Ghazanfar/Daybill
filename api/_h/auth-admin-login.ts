@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const { get } = require("../_db");
 const { signJWT } = require("../_auth");
 const { userShape, wrap } = require("../_util");
-const { HttpError as HE } = require("../_auth");
+const { HttpError: HE } = require("../_auth");
 
 module.exports = wrap(async (req: any, res: any) => {
   const { email, password } = req.body || {};

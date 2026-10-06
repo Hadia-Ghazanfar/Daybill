@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const { query, run } = require("../_db");
 const { signJWT } = require("../_auth");
 const { userShape, toDigits, isValidDisplayPhone, newId, nowIso, wrap } = require("../_util");
-const { HttpError as HE } = require("../_auth");
+const { HttpError: HE } = require("../_auth");
 
 module.exports = wrap(async (req: any, res: any) => {
   const { name, phone, shopName, shopAddress, pin } = req.body || {};

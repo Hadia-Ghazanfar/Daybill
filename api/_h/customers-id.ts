@@ -2,7 +2,7 @@
 const { query, get, run } = require("../_db");
 const { requireAuth } = require("../_auth");
 const { toDisplay, parsePhone, wrap } = require("../_util");
-const { HttpError as HE } = require("../_auth");
+const { HttpError: HE } = require("../_auth");
 
 async function loadCustomer(userId: string, id: string) {
   const c = await get<any>("SELECT * FROM customers WHERE id = ? AND user_id = ?", [id, userId]);
