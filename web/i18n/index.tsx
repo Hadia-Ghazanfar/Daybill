@@ -7,6 +7,10 @@ import {
   useState,
 } from 'react';
 import type { ReactNode } from 'react';
+import featAen from './featA.en';
+import featAur from './featA.ur';
+import featBen from './featB.en';
+import featBur from './featB.ur';
 
 export type Lang = 'en' | 'ur';
 
@@ -139,17 +143,13 @@ const urBase: Dict = {
  * `i18n/feat*.ur.ts` (default-exported {key: string} objects) are picked up
  * automatically via the eager glob below — no registration needed.
  */
-const featModules = import.meta.glob<{ default: Dict }>('./feat.*.ts', {
-  eager: true,
-});
-
 function buildDict(lang: Lang): Dict {
   const base = lang === 'ur' ? urBase : enBase;
   const dict: Dict = { ...base };
-  for (const [path, mod] of Object.entries(featModules)) {
-    if (path.endsWith(`.${lang}.ts`) && mod && mod.default) {
-      Object.assign(dict, mod.default);
-    }
+  if (lang === 'ur') {
+    Object.assign(dict, featAur, featBur);
+  } else {
+    Object.assign(dict, featAen, featBen);
   }
   return dict;
 }
