@@ -1,7 +1,7 @@
-import accountsHandler from "./_h/admin-accounts";
-import { ensureInit } from "./_init";
+const accountsHandler = require("./_h/admin-accounts").default || require("./_h/admin-accounts");
+const { ensureInit } = require("./_init");
 
-export default async (req: any, res: any) => {
+module.exports = async (req: any, res: any) => {
   await ensureInit();
   const action = String(req.query.action || "");
   if (action === "accounts") return accountsHandler(req, res);

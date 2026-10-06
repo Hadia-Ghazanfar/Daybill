@@ -1,4 +1,4 @@
-import { run } from "./_db";
+const { run } = require("./_db");
 
 const TABLES = `
 CREATE TABLE IF NOT EXISTS users(
@@ -84,9 +84,10 @@ CREATE TABLE IF NOT EXISTS feedback(
 );
 `;
 
-export async function migrate(): Promise<void> {
+async function migrate(): Promise<void> {
   for (const stmt of TABLES.split(";")) {
     const s = stmt.trim();
     if (s) await run(s);
   }
 }
+module.exports = { migrate };

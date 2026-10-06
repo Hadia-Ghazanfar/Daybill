@@ -1,10 +1,10 @@
-import collectionHandler from "./_h/purchases";
-import byIdHandler from "./_h/purchases-id";
-import deliverHandler from "./_h/purchases-deliver";
+const collectionHandler = require("./_h/purchases").default || require("./_h/purchases");
+const byIdHandler = require("./_h/purchases-id").default || require("./_h/purchases-id");
+const deliverHandler = require("./_h/purchases-deliver").default || require("./_h/purchases-deliver");
 
-import { ensureInit } from "./_init";
+const { ensureInit } = require("./_init");
 
-export default async (req: any, res: any) => {
+module.exports = async (req: any, res: any) => {
   await ensureInit();
   if (req.query.id && req.query.action === "deliver") return deliverHandler(req, res);
   if (req.query.id) return byIdHandler(req, res);

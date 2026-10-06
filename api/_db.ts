@@ -1,8 +1,8 @@
-import fs from "fs";
-import path from "path";
+const fs = require("fs").default || require("fs");
+const path = require("path").default || require("path");
 
 // Translate `?` placeholders to `$1,$2,...` for postgres.
-export function toPgPlaceholders(sql: string): string {
+function toPgPlaceholders(sql: string): string {
   let i = 0;
   return sql.replace(/\?/g, () => `$${++i}`);
 }
@@ -26,7 +26,7 @@ if (usePg) {
 }
 
 /** Run a SELECT returning all rows. */
-export async function query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+async function query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
   if (usePg) {
     const res = await pool.query(toPgPlaceholders(sql), params);
     return res.rows as T[];
@@ -35,7 +35,7 @@ export async function query<T = any>(sql: string, params: any[] = []): Promise<T
 }
 
 /** Run a SELECT returning the first row (or undefined). */
-export async function get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+async function get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
   if (usePg) {
     const res = await pool.query(toPgPlaceholders(sql), params);
     return res.rows[0] as T | undefined;
@@ -44,7 +44,7 @@ export async function get<T = any>(sql: string, params: any[] = []): Promise<T |
 }
 
 /** Run INSERT/UPDATE/DELETE. Returns { lastID, changes }. */
-export async function run(sql: string, params: any[] = []): Promise<{ lastID: any; changes: number }> {
+async function run(sql: string, params: any[] = []): Promise<{ lastID: any; changes: number }> {
   if (usePg) {
     // For INSERTs on users etc. we always return id via RETURNING id when needed.
     const needsReturning = /^\s*insert\s/i.test(sql);
@@ -61,6 +61,7 @@ export async function run(sql: string, params: any[] = []): Promise<{ lastID: an
   return { lastID: info.lastInsertRowid, changes: Number(info.changes) };
 }
 
-export function isPg(): boolean {
+function isPg(): boolean {
   return usePg;
 }
+module.exports = { get, isPg, query, run, toPgPlaceholders };

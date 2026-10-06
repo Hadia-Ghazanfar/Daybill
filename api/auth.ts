@@ -1,11 +1,11 @@
-import registerHandler from "./_h/auth-register";
-import loginHandler from "./_h/auth-login";
-import adminLoginHandler from "./_h/auth-admin-login";
-import meHandler from "./_h/auth-me";
+const registerHandler = require("./_h/auth-register").default || require("./_h/auth-register");
+const loginHandler = require("./_h/auth-login").default || require("./_h/auth-login");
+const adminLoginHandler = require("./_h/auth-admin-login").default || require("./_h/auth-admin-login");
+const meHandler = require("./_h/auth-me").default || require("./_h/auth-me");
 
-import { ensureInit } from "./_init";
+const { ensureInit } = require("./_init");
 
-export default async (req: any, res: any) => {
+module.exports = async (req: any, res: any) => {
   await ensureInit();
   const action = String(req.query.action || "");
   if (req.method === "POST" && action === "register") return registerHandler(req, res);

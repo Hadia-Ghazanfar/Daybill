@@ -1,9 +1,9 @@
-import crypto from "crypto";
-import { get, run } from "./_db";
+const crypto = require("crypto").default || require("crypto");
+const { get, run } = require("./_db");
 
 const DEFAULT_ADMIN_EMAIL = "hadiaghazanfar354@gmail.com";
 
-export async function seedAdmin(): Promise<void> {
+async function seedAdmin(): Promise<void> {
   const adminEmail = (process.env.ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL).trim().toLowerCase();
   const existing = await get("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
   if (existing) return;
@@ -36,3 +36,4 @@ export async function seedAdmin(): Promise<void> {
     console.log(`Daybill admin seeded: ${adminEmail}`);
   }
 }
+module.exports = { seedAdmin };

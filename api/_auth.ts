@@ -1,8 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const jwt = require("jsonwebtoken");
-import { get } from "./_db";
+const { get } = require("./_db");
 
-export interface AuthUser {
+interface AuthUser {
   id: string;
   name: string | null;
   phone: string | null;
@@ -13,7 +13,7 @@ export interface AuthUser {
   created_at: string;
 }
 
-export interface ReqLike {
+interface ReqLike {
   headers: { [key: string]: any };
 }
 
@@ -21,11 +21,11 @@ function getSecret(): string {
   return process.env.JWT_SECRET || "daybill-dev-secret-change-me";
 }
 
-export function signJWT(payload: { sub: string; role: string }): string {
+function signJWT(payload: { sub: string; role: string }): string {
   return jwt.sign(payload, getSecret(), { expiresIn: "30d" });
 }
 
-export function verifyJWT(token: string): { sub: string; role: string } | null {
+function verifyJWT(token: string): { sub: string; role: string } | null {
   try {
     const decoded = jwt.verify(token, getSecret()) as { sub: string; role: string };
     if (!decoded || !decoded.sub) return null;
@@ -35,7 +35,7 @@ export function verifyJWT(token: string): { sub: string; role: string } | null {
   }
 }
 
-export function getTokenFromHeader(req: ReqLike): string | null {
+function getTokenFromHeader(req: ReqLike): string | null {
   const h = req.headers["authorization"] || req.headers["Authorization"];
   if (typeof h === "string" && h.toLowerCase().startsWith("bearer ")) {
     return h.slice(7).trim();
@@ -43,7 +43,7 @@ export function getTokenFromHeader(req: ReqLike): string | null {
   return null;
 }
 
-export class HttpError extends Error {
+class HttpError extends Error {
   status: number;
   constructor(status: number, message: string) {
     super(message);
@@ -52,7 +52,7 @@ export class HttpError extends Error {
 }
 
 /** Return the authenticated user row, or throw HttpError(401). */
-export async function requireAuth(req: ReqLike): Promise<AuthUser> {
+async function requireAuth(req: ReqLike): Promise<AuthUser> {
   const token = getTokenFromHeader(req);
   if (!token) throw new HttpError(401, "Missing authorization token");
   const payload = verifyJWT(token);
@@ -66,8 +66,9 @@ export async function requireAuth(req: ReqLike): Promise<AuthUser> {
 }
 
 /** Return the authenticated admin user, or throw HttpError(401/403). */
-export async function requireAdmin(req: ReqLike): Promise<AuthUser> {
+async function requireAdmin(req: ReqLike): Promise<AuthUser> {
   const user = await requireAuth(req);
   if (user.role !== "admin") throw new HttpError(403, "Admin access required");
   return user;
 }
+module.exports = { HttpError, getTokenFromHeader, requireAdmin, requireAuth, signJWT, verifyJWT };
