@@ -98,5 +98,4 @@ function invoiceTotal(items: { qty: number; price: number }[], discount: number)
   return Math.max(0, subtotal - (Number(discount) || 0));
 }
 
-type { AuthUser };
 module.exports = { PHONE_RE, contactShape, invoiceTotal, isValidDisplayPhone, newId, nowIso, parsePhone, productShape, toDigits, toDisplay, userShape, wrap };
